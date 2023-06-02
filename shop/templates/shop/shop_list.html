@@ -1,0 +1,21 @@
+<h1>Shops Information Dash Board</h1><hr>
+<table border='2'>
+    <thead>
+        <th>Shop Name</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th><a href="{% url 'shop_create' %}" class='btn btn-primary btnlg'>Create New Shop</a></th>
+        <th><a href="{% url 'shop_query' %}" class='btn btn-primary btnlg'>Near By Shops</a></th>
+    </thead>
+    {% for shop in shops %}
+    <tr>
+        <td>{{shop.name|title}}</td>
+        <td>{{shop.latitude}}</td>
+        <td>{{shop.longitude}}</td>
+        <td> <a href="{% url 'shop_detail' shop.id %}">Details</a> </td>
+        <td><a href="{% url 'shop_update' shop.id %}">Update</a></td> 
+    </tr>
+    {% empty %}
+        <li>No shops found.</li>
+    {% endfor %}
+</table><br><br><br> 

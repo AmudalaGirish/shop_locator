@@ -1,0 +1,17 @@
+<form method="post" action="{% url 'shop_query' %}">
+    {% csrf_token %}
+    <div>
+      <label for="id_latitude">Latitude:</label>
+      {{ form.latitude }}
+    </div>
+    <div>
+      <label for="id_longitude">Longitude:</label>
+      {{ form.longitude }}
+    </div>
+    <div>
+      <label for="id_distance">Distance (in kilometers):</label>
+      {{ form.distance }}
+    </div>
+    <button type="submit">Search</button>
+  </form>
+  
