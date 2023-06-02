@@ -4,7 +4,6 @@ Shop Locator is a web application that allows users to find nearby shops based o
 
 ## Features
 
-- User registration and authentication
 - Shop creation and management
 - Search for nearby shops based on user location
 
