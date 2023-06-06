@@ -1,8 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import Shop
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
 from .models import Shop
 from .forms import ShopForm, QueryForm
 
 # Create your views here.
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'shop/register.html', {'form': form})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('shop_list')
+        else:
+            return render(request, 'shop/login.html', {'error_message': 'Invalid login credentials'})
+    return render(request, 'shop/login.html')
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
+
+
+def home(request):
+    return render(request, 'shop/home.html')
+
 
 def shop_list(request):
     # list of all shops
@@ -15,15 +52,28 @@ def shop_detail(request, id):
     # shop = get_object_or_404(Shop, pk=id)
     return render(request, 'shop/shop_detail.html', {'shop':shop})
 
+@login_required
 def shop_create(request):
     form = ShopForm()
     if request.method == 'POST':
         form = ShopForm(request.POST)
         if form.is_valid():
+            # getting the user provided data
+            name = form.cleaned_data['name']
+            latitude = form.cleaned_data['latitude']
+            longitude = form.cleaned_data['longitude']
+
+            # check if a shop with same name and coordinates already exists
+            # if Shop.objects.filter(name=name, latitude=latitude, longitude=longitude).exists():
+            if Shop.objects.filter(name=name).exists():
+                return render(request, 'shop/shop_create.html', {'form':form, 'error_message':'Shop Already exists please provide new shop details'})
+            
             form.save()
             return redirect('shop_list')
     return render(request, 'shop/shop_create.html', {'form':form})
 
+@login_required
+@permission_required('shop.change_shop')
 def shop_update(request, id):
     # shop detail view w.r.t id
     shop = get_object_or_404(Shop, id=id)
